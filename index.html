@@ -1,0 +1,701 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Accounts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'self'">
+  <style>
+    :root{
+      --bg: #ffffff;
+      --fg: #0a0a0a;
+      --muted: #666;
+      --accent: #0b5fff;
+      --card: #f5f7fb;
+      --border: #d8dbe2;
+      --danger: #b00020;
+      --toast-bg: rgba(0,0,0,0.85);
+      --toast-fg: #fff;
+      --focus: 2px solid #0b5fff;
+      --radius: 12px;
+      --shadow: 0 1px 2px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06);
+      --tap: 44px;
+      --font: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg: #0b0d12;
+        --fg: #f5f7fb;
+        --muted: #9aa3b2;
+        --accent: #4d8dff;
+        --card: #121622;
+        --border: #2a3140;
+        --danger: #ff5572;
+        --toast-bg: rgba(255,255,255,0.1);
+        --toast-fg: #fff;
+        --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 6px 24px rgba(0,0,0,0.35);
+      }
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--font);
+      background:var(--bg);
+      color:var(--fg);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    header{
+      position:sticky;
+      top:0;
+      z-index:10;
+      backdrop-filter:saturate(1.2) blur(6px);
+      background:linear-gradient(to bottom, color-mix(in oklab, var(--bg) 90%, transparent), transparent);
+      border-bottom:1px solid var(--border);
+    }
+    .wrap{max-width:760px;margin:0 auto;padding:12px 16px 24px}
+    h1{
+      margin:4px 0 10px;
+      font-size:20px;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .inputs{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      padding-bottom:10px;
+    }
+    .inputs input{
+      flex:1 1 50%;
+      min-height:var(--tap);
+      border:1px solid var(--border);
+      background:var(--card);
+      color:var(--fg);
+      border-radius:10px;
+      padding:12px 14px;
+      font-size:16px;
+      outline:none;
+      box-shadow: inset 0 1px 0 rgba(0,0,0,0.04);
+    }
+    .inputs input::placeholder{color:var(--muted)}
+    .inputs input:focus-visible{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px color-mix(in oklab, var(--accent) 30%, transparent);
+    }
+
+    main{padding-top:8px}
+    .empty{
+      color:var(--muted);
+      font-size:14px;
+      padding:16px 2px;
+    }
+
+    .list{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+    @media (min-width:640px){
+      .list{grid-template-columns:1fr 1fr}
+    }
+
+    .card{
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      min-height:var(--tap);
+      padding:14px 16px;
+      border:1px solid var(--border);
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      user-select:none;
+      touch-action:pan-y;
+    }
+    .card:focus-visible{
+      outline:var(--focus);
+      outline-offset:2px;
+    }
+    .label, .value{
+      display:inline-block;
+      min-height:var(--tap);
+      padding:6px 8px;
+      border-radius:8px;
+      line-height:1.2;
+    }
+    .label{
+      flex:1 1 auto;
+      font-weight:600;
+    }
+    .value{
+  flex:0 0 auto;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.3px;
+}
+
+    .label:focus-visible, .value:focus-visible{
+      outline:var(--focus);
+      outline-offset:2px;
+    }
+
+    .edit{
+      flex:1 1 auto;
+      min-height:var(--tap);
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:var(--bg);
+      color:var(--fg);
+      font-size:16px;
+    }
+    .edit:focus-visible{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px color-mix(in oklab, var(--accent) 30%, transparent);
+      outline:none;
+    }
+
+    .hint{
+      margin-top:12px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:16px;
+      transform:translateX(-50%) translateY(20px);
+      background:var(--toast-bg);
+      color:var(--toast-fg);
+      padding:10px 14px;
+      border-radius:999px;
+      box-shadow:0 6px 22px rgba(0,0,0,0.2);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
+      font-size:14px;
+      z-index:100;
+    }
+    .toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(0);
+    }
+
+    .sr-only{
+      position:absolute !important;
+      width:1px;height:1px;
+      padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Accounts</h1>
+      <div class="inputs" aria-label="Add account">
+        <input id="bank" type="text" autocomplete="organization" placeholder="Bank Name" aria-label="Bank name" />
+        <input id="acct" type="text" inputmode="numeric" autocapitalize="off" autocomplete="off" placeholder="Account Number" aria-label="Account number" />
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main>
+      <div id="empty" class="empty" role="note">No accounts yet. Type above and press Enter.</div>
+      <div id="list" class="list" role="list"></div>
+      <div class="hint" aria-hidden="true">
+        <span>Enter on Account Number adds</span>
+        <span>Enter on Bank Name adds if Account Number filled</span>
+        <span>Double‑tap Bank Name to rename (Enter saves, Esc cancels)</span>
+        <span>Delete key or swipe left to delete</span>
+        <span>Ctrl/Cmd+S export • Ctrl/Cmd+O import</span>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <input id="file" type="file" accept="application/json,.json" style="display:none" />
+
+  <script type="module">
+    // Accounts — single-file offline app
+    const STORAGE_KEY = 'accounts.v1';
+    const els = {
+      bank: document.getElementById('bank'),
+      acct: document.getElementById('acct'),
+      list: document.getElementById('list'),
+      empty: document.getElementById('empty'),
+      toast: document.getElementById('toast'),
+      status: document.getElementById('status'),
+      file: document.getElementById('file'),
+    };
+
+    /** In-memory state */
+    let items = load();
+    let lastSensitiveClear = null;
+
+    render();
+
+    // --- Add flow: Enter to add
+    els.acct.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        tryAdd();
+      }
+    });
+    els.bank.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (els.acct.value.trim()) tryAdd();
+      }
+    });
+
+    function tryAdd(){
+      const bankName = els.bank.value.trim();
+      const accountNumber = els.acct.value.trim();
+      if (!bankName || !accountNumber){
+        toast('Both fields required');
+        return;
+      }
+      addItem({ bankName, accountNumber });
+      els.bank.value = '';
+      els.acct.value = '';
+      els.bank.focus();
+      toast('Added');
+      announce(`Added ${bankName}`);
+    }
+
+    // --- List rendering
+    function render(){
+      els.list.innerHTML = '';
+      if (!items.length){
+        els.empty.style.display = '';
+        return;
+      }
+      els.empty.style.display = 'none';
+      items.forEach((it, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `Copy bank and account for ${it.bankName}`);
+        card.tabIndex = 0;
+        card.dataset.id = it.id;
+        card.dataset.index = String(index);
+
+        // Bank name span (tappable + editable)
+        const bank = document.createElement('span');
+        bank.className = 'label';
+        bank.textContent = it.bankName;
+        bank.setAttribute('role', 'button');
+        bank.setAttribute('aria-label', `Copy bank name ${it.bankName}. Press Enter to edit, Esc to cancel.`);
+        bank.tabIndex = 0;
+
+        // Account number span (tappable)
+        const acc = document.createElement('span');
+        acc.className = 'value';
+        acc.textContent = it.accountNumber;
+        acc.setAttribute('role', 'button');
+        acc.setAttribute('aria-label', `Copy account number for ${it.bankName}`);
+        acc.tabIndex = 0;
+
+        // Click/Tap behavior
+        bank.addEventListener('click', (e) => {
+          e.stopPropagation();
+          copyBank(it);
+        });
+        acc.addEventListener('click', (e) => {
+          e.stopPropagation();
+          copyAccount(it);
+        });
+        card.addEventListener('click', (e) => {
+          if (e.target === bank || e.target === acc) return;
+          copyBoth(it);
+        });
+
+        // Keyboard on spans/card
+        bank.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter'){
+            e.preventDefault();
+            startEditName(card, it);
+          } else if (e.key === ' '){
+            e.preventDefault();
+            copyBank(it);
+          } else if (e.key === 'Delete' || e.key === 'Backspace'){
+            e.preventDefault();
+            requestDelete(it);
+          } else if (e.key === 'ArrowRight'){
+            e.preventDefault();
+            acc.focus();
+          } else if (e.key === 'ArrowLeft'){
+            e.preventDefault();
+            card.focus();
+          } else if (e.key === 'ArrowDown'){
+            e.preventDefault();
+            focusSibling(index+1, 'bank');
+          } else if (e.key === 'ArrowUp'){
+            e.preventDefault();
+            focusSibling(index-1, 'bank');
+          }
+        });
+        acc.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            copyAccount(it);
+          } else if (e.key === 'Delete' || e.key === 'Backspace'){
+            e.preventDefault();
+            requestDelete(it);
+          } else if (e.key === 'ArrowLeft'){
+            e.preventDefault();
+            bank.focus();
+          } else if (e.key === 'ArrowRight'){
+            e.preventDefault();
+            card.focus();
+          } else if (e.key === 'ArrowDown'){
+            e.preventDefault();
+            focusSibling(index+1, 'acc');
+          } else if (e.key === 'ArrowUp'){
+            e.preventDefault();
+            focusSibling(index-1, 'acc');
+          }
+        });
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            copyBoth(it);
+          } else if (e.key === 'Delete' || e.key === 'Backspace'){
+            e.preventDefault();
+            requestDelete(it);
+          } else if (e.key === 'ArrowLeft'){
+            e.preventDefault();
+            bank.focus();
+          } else if (e.key === 'ArrowRight'){
+            e.preventDefault();
+            acc.focus();
+          } else if (e.key === 'ArrowDown'){
+            e.preventDefault();
+            focusSibling(index+1, 'card');
+          } else if (e.key === 'ArrowUp'){
+            e.preventDefault();
+            focusSibling(index-1, 'card');
+          }
+        });
+
+        // Double-tap/double-click to edit bank name
+        bank.addEventListener('dblclick', (e) => {
+          e.preventDefault();
+          startEditName(card, it);
+        });
+        // Double-tap detector for touch
+        let lastTap = 0;
+        bank.addEventListener('touchend', (e) => {
+          const now = Date.now();
+          if (now - lastTap < 300){
+            e.preventDefault();
+            startEditName(card, it);
+            lastTap = 0;
+          } else {
+            lastTap = now;
+          }
+        }, {passive:false});
+
+        // Swipe left to delete (mobile)
+        let touchX = null, touchY = null;
+        card.addEventListener('touchstart', (e) => {
+          const t = e.changedTouches[0];
+          touchX = t.clientX; touchY = t.clientY;
+        }, {passive:true});
+        card.addEventListener('touchend', (e) => {
+          if (touchX == null) return;
+          const t = e.changedTouches[0];
+          const dx = t.clientX - touchX;
+          const dy = t.clientY - touchY;
+          touchX = touchY = null;
+          if (dx < -60 && Math.abs(dy) < 40){
+            requestDelete(it);
+          }
+        }, {passive:true});
+
+        card.append(bank, acc);
+        els.list.appendChild(card);
+      });
+    }
+
+    function focusSibling(idx, target){
+      if (idx < 0 || idx >= items.length) return;
+      const card = els.list.children[idx];
+      if (!card) return;
+      if (target === 'bank') card.querySelector('.label')?.focus();
+      else if (target === 'acc') card.querySelector('.value')?.focus();
+      else card.focus();
+    }
+
+    // --- Edit bank name
+    function startEditName(card, it){
+      // Replace bank span with input
+      const bankSpan = card.querySelector('.label');
+      if (!bankSpan) return;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'edit';
+      input.value = it.bankName;
+      input.setAttribute('aria-label', `Editing bank name for ${it.bankName}`);
+      card.replaceChild(input, bankSpan);
+      input.focus();
+      input.setSelectionRange(0, input.value.length);
+
+      const finish = (commit) => {
+        const newName = commit ? input.value.trim() : it.bankName;
+        if (commit && newName && newName !== it.bankName){
+          it.bankName = newName;
+          save();
+        }
+        // Restore span
+        const span = document.createElement('span');
+        span.className = 'label';
+        span.textContent = it.bankName;
+        span.setAttribute('role', 'button');
+        span.setAttribute('aria-label', `Copy bank name ${it.bankName}. Press Enter to edit, Esc to cancel.`);
+        span.tabIndex = 0;
+        // Rebind events
+        span.addEventListener('click', (e) => { e.stopPropagation(); copyBank(it); });
+        span.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter'){ e.preventDefault(); startEditName(card, it); }
+          else if (e.key === ' '){ e.preventDefault(); copyBank(it); }
+          else if (e.key === 'Delete' || e.key === 'Backspace'){ e.preventDefault(); requestDelete(it); }
+          else if (e.key === 'ArrowRight'){ e.preventDefault(); card.querySelector('.value')?.focus(); }
+          else if (e.key === 'ArrowLeft'){ e.preventDefault(); card.focus(); }
+          else if (e.key === 'ArrowDown'){ e.preventDefault(); focusSibling(Number(card.dataset.index)+1, 'bank'); }
+          else if (e.key === 'ArrowUp'){ e.preventDefault(); focusSibling(Number(card.dataset.index)-1, 'bank'); }
+        });
+        // Restore
+        card.replaceChild(span, input);
+        span.focus();
+        render(); // ensure labels reflect latest and indices are kept
+        toast(commit ? 'Renamed' : 'Canceled');
+        announce(commit ? `Renamed to ${it.bankName}` : 'Rename canceled');
+      };
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter'){ e.preventDefault(); finish(true); }
+        else if (e.key === 'Escape'){ e.preventDefault(); finish(false); }
+      });
+      input.addEventListener('blur', () => finish(true), { once: true });
+    }
+
+    // --- Copy helpers with sensitive clearing
+    async function copyText(text){
+      try{
+        if (navigator.clipboard && navigator.clipboard.writeText){
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      }catch{}
+      // Fallback
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        ta.style.pointerEvents = 'none';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      }catch{
+        return false;
+      }
+    }
+
+    function copyBank(it){
+      copyText(it.bankName).then((ok) => {
+        toast(ok ? 'Bank name copied' : 'Copy failed');
+        announce(`Copied bank name for ${it.bankName}`);
+      });
+    }
+    function copyAccount(it){
+      copyText(it.accountNumber).then(async (ok) => {
+        toast(ok ? 'Account number copied' : 'Copy failed');
+        announce(`Copied account number for ${it.bankName}`);
+        if (ok) scheduleClipboardClearSensitive();
+      });
+    }
+    function copyBoth(it){
+      const combined = `${it.bankName} — ${it.accountNumber}`;
+      copyText(combined).then(async (ok) => {
+        toast(ok ? 'Copied' : 'Copy failed');
+        announce(`Copied bank and account for ${it.bankName}`);
+        if (ok) scheduleClipboardClearSensitive();
+      });
+    }
+
+    async function scheduleClipboardClearSensitive(delayMs = 20000){
+      if (lastSensitiveClear) clearTimeout(lastSensitiveClear);
+      // Attempt permission check (may not be supported)
+      let canWrite = false;
+      try{
+        if (navigator.permissions && navigator.permissions.query){
+          const p = await navigator.permissions.query({ name: 'clipboard-write' });
+          canWrite = p.state === 'granted' || p.state === 'prompt';
+        } else {
+          // Assume maybe allowed; we'll catch on write
+          canWrite = true;
+        }
+      }catch{ canWrite = true; }
+      if (!canWrite) return;
+      lastSensitiveClear = setTimeout(async () => {
+        try{
+          if (navigator.clipboard && navigator.clipboard.writeText){
+            await navigator.clipboard.writeText('');
+            toast('Clipboard cleared');
+            announce('Clipboard cleared');
+          }
+        }catch{
+          /* Ignore if browser blocks */
+        }
+      }, delayMs);
+    }
+
+    // --- Persistence
+    function load(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter(v => v && typeof v.bankName === 'string' && typeof v.accountNumber === 'string')
+                     .map(v => ({ id: v.id || makeId(), bankName: v.bankName, accountNumber: v.accountNumber }));
+      }catch{
+        return [];
+      }
+    }
+    function save(){
+      try{
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      }catch{}
+      render();
+    }
+    function addItem({bankName, accountNumber}){
+      items.push({ id: makeId(), bankName, accountNumber });
+      save();
+    }
+    function deleteItem(id){
+      items = items.filter(x => x.id !== id);
+      save();
+    }
+
+    function makeId(){
+      return (Date.now().toString(36) + Math.random().toString(36).slice(2,8)).toUpperCase();
+    }
+
+    // --- Delete with confirm
+    function requestDelete(it){
+      const ok = confirm(`Delete account "${it.bankName}" ending with ${it.accountNumber.slice(-4)}?`);
+      if (ok){
+        deleteItem(it.id);
+        toast('Deleted');
+        announce(`Deleted ${it.bankName}`);
+      }
+    }
+
+    // --- Import/Export via shortcuts (no buttons)
+    document.addEventListener('keydown', (e) => {
+      const isMod = (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey;
+      if (!isMod) return;
+      if (e.key.toLowerCase() === 's'){
+        e.preventDefault();
+        exportData();
+      } else if (e.key.toLowerCase() === 'o'){
+        e.preventDefault();
+        els.file.value = '';
+        els.file.click();
+      }
+    });
+
+    function exportData(){
+      const data = JSON.stringify(items, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const stamp = new Date().toISOString().replace(/[:.]/g,'-');
+      a.download = `accounts-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast('Exported');
+      announce('Export started');
+    }
+
+    els.file.addEventListener('change', async () => {
+      const file = els.file.files?.[0];
+      if (!file) return;
+      try{
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        if (!Array.isArray(parsed)) throw new Error('Invalid file');
+        const normalized = parsed
+          .filter(v => v && typeof v.bankName === 'string' && typeof v.accountNumber === 'string')
+          .map(v => ({ id: makeId(), bankName: v.bankName.trim(), accountNumber: v.accountNumber.trim() }))
+          .filter(v => v.bankName && v.accountNumber);
+        if (!normalized.length){ toast('Nothing to import'); return; }
+        const replace = confirm(`Import ${normalized.length} item(s)? OK = Replace, Cancel = Merge`);
+        if (replace){
+          items = normalized;
+        } else {
+          // Merge, de-duplicate by bankName+accountNumber
+          const key = (v) => `${v.bankName}\u0000${v.accountNumber}`;
+          const map = new Map(items.map(v => [key(v), v]));
+          for (const v of normalized) if (!map.has(key(v))) map.set(key(v), v);
+          items = Array.from(map.values());
+        }
+        save();
+        toast('Import complete');
+        announce('Import complete');
+      }catch{
+        toast('Import failed');
+        announce('Import failed');
+      }
+    });
+
+    // --- Toast + aria-live
+    let toastTimer = null;
+    function toast(msg, ms=1600){
+      els.toast.textContent = msg;
+      els.toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => els.toast.classList.remove('show'), ms);
+    }
+    function announce(msg){
+      els.status.textContent = msg;
+    }
+
+    // --- Prevent any network calls (best-effort)
+    // Nothing to do: app does not fetch or load external resources.
+
+    // --- Accessibility niceties: keep tab order intuitive
+    // After render, keep focus if possible
+    const observer = new MutationObserver(() => {
+      const active = document.activeElement;
+      if (!active || active === document.body) return;
+      // no-op; placeholder for future focus retention if needed
+    });
+    observer.observe(els.list, { childList: true });
+
+    // --- Avoid accidental pull-to-refresh scroll chaining on mobile
+    document.addEventListener('touchmove', () => {}, {passive:true});
+  </script>
+</body>
+</html>
