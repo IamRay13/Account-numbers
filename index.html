@@ -3,664 +3,738 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Quick Copy Vault</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="color-scheme" content="light" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Secure Labels — Accounts & IDs</title>
   <!-- SVG favicon -->
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-    <defs>
-      <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-        <stop offset="0" stop-color="%230a2540"/>
-        <stop offset="1" stop-color="%230065a6"/>
-      </linearGradient>
-    </defs>
-    <rect x="6" y="10" width="52" height="44" rx="10" fill="url(%23g)" />
-    <path d="M20 22 h24 M20 32 h24 M20 42 h24" stroke="%23ffffff" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="50" cy="22" r="3.2" fill="%23ffffff"/>
-  </svg>' />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="%23006CFF"/>
+          <stop offset="1" stop-color="%2300C2A8"/>
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="12" fill="url(%23g)"/>
+      <g fill="white">
+        <rect x="16" y="18" width="32" height="24" rx="4"/>
+        <rect x="24" y="12" width="24" height="24" rx="4" opacity="0.8"/>
+      </g>
+    </svg>' />
+  <meta name="color-scheme" content="light dark" />
+
   <style>
     :root {
-      /* Professional color palette: navy, slate, teal, soft neutrals */
-      --bg: #ffffff;
-      --text: #0f172a;          /* slate-900 */
-      --muted: #64748b;         /* slate-500 */
-      --border: #e2e8f0;        /* slate-200 */
-      --accent: #0065a6;        /* professional blue */
-      --accent-fg: #ffffff;
-      --success: #16a34a;       /* green-600 */
-      --danger: #ef4444;        /* red-500 */
-      --card: #ffffff;
-      --shadow: 0 8px 24px rgba(2, 6, 23, 0.10);
-      --radius: 14px;
-      --radius-sm: 10px;
-      --radius-xs: 8px;
+      /* Professional, modern palette */
+      --bg: #0f1216;
+      --bg-elev: #151922;
+      --card: #1a1f2b;
+      --accent: #006CFF;
+      --accent-2: #00C2A8;
+      --text: #e9eef8;
+      --muted: #9aa6b2;
+      --border: #2a3342;
+      --good: #1DB954;
+      --danger: #e5484d;
+      --warn: #ffb020;
+
+      --radius: 12px;
+      --radius-sm: 9px;
+      --shadow: 0 8px 24px rgba(0,0,0,0.25);
+      --shadow-soft: 0 4px 16px rgba(0,0,0,0.18);
+      --focus: 0 0 0 2px color-mix(in oklab, var(--accent) 65%, white 35%);
     }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f5f7fb;
+        --bg-elev: #ffffff;
+        --card: #ffffff;
+        --text: #0d1321;
+        --muted: #5b6677;
+        --border: #e6e9ee;
+        --shadow: 0 8px 24px rgba(10, 20, 40, 0.08);
+        --shadow-soft: 0 4px 16px rgba(10, 20, 40, 0.06);
+      }
+    }
+
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
       margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: var(--bg);
+      background: linear-gradient(180deg, var(--bg) 0%, color-mix(in oklab, var(--bg) 84%, var(--bg-elev)) 100%);
       color: var(--text);
-      line-height: 1.5;
+      font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
     }
 
-    /* Layout */
+    /* App shell */
     .app {
       max-width: 1000px;
       margin: 0 auto;
-      padding: 20px;
-    }
-    .header {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .brand {
-      display: flex; align-items: center; gap: 12px;
-    }
-    .brand svg { width: 28px; height: 28px; color: var(--accent); }
-    .brand h1 { font-size: 22px; margin: 0; font-weight: 800; letter-spacing: 0.2px; }
-    .hint { font-size: 12px; color: var(--muted); }
-
-    /* Controls row */
-    .controls {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .search { position: relative; }
-    .search input {
-      width: 100%;
-      height: 42px;
-      padding: 0 44px 0 40px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--card);
-      outline: none;
-      transition: box-shadow 160ms, border-color 160ms;
-      box-shadow: var(--shadow);
-    }
-    .search input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(0,101,166,0.20);
-    }
-    .search .icon {
-      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-      width: 18px; height: 18px; color: var(--muted);
-    }
-    .search .clear {
-      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-      width: 26px; height: 26px;
-      border: none; background: transparent; color: var(--muted);
-      border-radius: 50%;
-      display: grid; place-items: center; cursor: pointer;
-    }
-    .search .clear:hover { background: #f1f5f9; }
-    .sort {
-      display: flex; align-items: center; gap: 8px;
-      padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
-      background: var(--card); box-shadow: var(--shadow);
-    }
-    .sort label { font-size: 12px; color: var(--muted); }
-    .sort select {
-      height: 38px; border: none; outline: none; background: transparent; color: var(--text);
-    }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .btn {
-      height: 42px; padding: 0 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      display: inline-flex; align-items: center; gap: 8px;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      transition: background 160ms, border-color 160ms, transform 80ms;
-    }
-    .btn:active { transform: translateY(1px); }
-    .btn svg { width: 18px; height: 18px; color: var(--text); }
-    .btn.primary {
-      background: var(--accent);
-      color: var(--accent-fg);
-      border-color: var(--accent);
-    }
-
-    /* Card list */
-    .list {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-    .list-header {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr auto;
-      gap: 10px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      background: #f8fafc;
-      font-size: 12px; color: var(--muted);
-    }
-    .item {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr auto;
-      gap: 10px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      align-items: center;
-    }
-    .item:last-child { border-bottom: none; }
-    .cell { display: flex; align-items: center; gap: 8px; min-width: 0; }
-    .label, .value {
-      display: inline-block;
-      padding: 8px 10px;
-      border: 1px dashed transparent;
-      border-radius: var(--radius-xs);
-      cursor: pointer;
-      transition: background 120ms, border-color 120ms;
-      user-select: none;
-      max-width: 100%;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
-    .label:hover, .value:hover { background: #f8fafc; border-color: #e5e7eb; }
-    .muted { color: var(--muted); font-size: 12px; }
-    .item-actions { display: inline-flex; gap: 6px; }
-    .icon-btn {
-      width: 34px; height: 34px;
-      display: grid; place-items: center;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xs);
-      background: var(--card);
-      cursor: pointer;
-      transition: background 160ms, border-color 160ms, transform 80ms;
-    }
-    .icon-btn:hover { background: #f8fafc; }
-    .icon-btn:active { transform: translateY(1px); }
-    .icon-btn svg { width: 18px; height: 18px; color: var(--muted); }
-
-    /* Modal */
-    .modal-backdrop {
-      position: fixed; inset: 0;
-      background: rgba(2,6,23,0.42);
-      display: none; z-index: 40;
-    }
-    .modal {
-      position: fixed; inset: 0;
-      display: none; place-items: center; z-index: 50;
       padding: 24px;
     }
-    .dialog {
-      width: 100%; max-width: 560px;
+
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 720px) {
+      .header {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+    }
+    .brand svg { width: 26px; height: 26px; }
+    .brand h1 {
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: 0.2px;
+      font-weight: 650;
+    }
+    .brand small { color: var(--muted); }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--bg-elev), color-mix(in oklab, var(--bg-elev) 80%, var(--card)));
+      color: var(--text);
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.04s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: color-mix(in oklab, var(--border) 70%, var(--accent) 30%); }
+    .btn:active { transform: translateY(0); }
+    .btn.primary { background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 40%, var(--bg-elev)), var(--accent)); border-color: color-mix(in oklab, var(--accent) 40%, var(--border)); color: white; }
+    .btn.warn { background: linear-gradient(180deg, color-mix(in oklab, var(--warn) 40%, var(--bg-elev)), var(--warn)); border-color: color-mix(in oklab, var(--warn) 40%, var(--border)); color: white; }
+    .btn svg { width: 16px; height: 16px; }
+
+    /* Search with clear button */
+    .search-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    .search {
+      width: 100%;
+      padding: 10px 36px 10px 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
+      color: var(--text);
+      box-shadow: var(--shadow-soft);
+      outline: none;
+    }
+    .search::placeholder { color: var(--muted); }
+    .search-icon {
+      position: absolute; left: 10px; color: var(--muted);
+    }
+    .clear-btn {
+      position: absolute; right: 8px;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    /* Sorter */
+    .sort {
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
+      color: var(--text);
+      box-shadow: var(--shadow-soft);
+      outline: none;
+    }
+
+    /* List */
+    .list {
+      margin-top: 16px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
       overflow: hidden;
+      box-shadow: var(--shadow);
     }
-    .dialog header { padding: 16px 18px; border-bottom: 1px solid var(--border); font-weight: 700; }
-    .dialog .content { padding: 18px; display: grid; gap: 12px; }
-    .field label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; }
-    .field input, .field textarea {
-      width: 100%; height: 42px; padding: 0 12px;
-      border: 1px solid var(--border); border-radius: var(--radius-sm);
-      outline: none; background: var(--card);
+
+    .item {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border-top: 1px solid var(--border);
     }
-    .field textarea { height: 96px; padding-top: 10px; resize: vertical; }
-    .dialog footer { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+    .item:first-child { border-top: none; }
+    .item:hover { background: color-mix(in oklab, var(--card) 85%, var(--bg-elev)); }
+
+    @media (max-width: 720px) {
+      .item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .item-actions { justify-self: start; }
+    }
+
+    .cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      border: 1px dashed transparent;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      background: linear-gradient(180deg, color-mix(in oklab, var(--card) 92%, var(--bg-elev)), var(--card));
+    }
+    .cell:hover { border-color: color-mix(in oklab, var(--border) 60%, var(--accent) 40%); }
+    .cell .label { font-weight: 600; letter-spacing: 0.2px; }
+    .cell .value { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+
+    .item-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      justify-self: end;
+    }
+    .icon-btn {
+      width: 34px; height: 34px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 0.06s ease, background 0.2s ease;
+    }
+    .icon-btn:hover { transform: translateY(-1px); }
+    .icon-btn.edit { color: var(--accent); }
+    .icon-btn.delete { color: var(--danger); }
+
+    /* Empty state */
+    .empty {
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    /* Dialog */
+    dialog {
+      border: none;
+      border-radius: 16px;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: var(--card);
+      color: var(--text);
+      width: min(520px, 92vw);
+    }
+    .dlg-head {
+      padding: 16px;
+      background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 18%, var(--card)), var(--card));
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dlg-body { padding: 16px; display: grid; gap: 12px; }
+    .field { display: grid; gap: 6px; }
+    .field label { color: var(--muted); font-weight: 600; }
+    .input {
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
+      color: var(--text);
+      outline: none;
+    }
+    .dlg-actions {
+      padding: 12px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--border);
+      background: var(--bg-elev);
+    }
 
     /* Toast */
     .toast {
-      position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
-      background: var(--success);
-      color: #ffffff;
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--good);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 999px;
       box-shadow: var(--shadow);
-      display: none;
-      z-index: 60;
-      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      z-index: 9999;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
-    /* Responsive */
-    @media (max-width: 900px) {
-      .header { grid-template-columns: 1fr; }
-      .controls { grid-template-columns: 1fr auto; grid-auto-flow: row; }
-      .actions { justify-self: end; }
+    /* Footer help */
+    .footer {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px;
     }
-    @media (max-width: 760px) {
-      .list-header, .item { grid-template-columns: 1fr; }
-      .item-actions { margin-top: 6px; }
-      .label, .value { max-width: 100%; }
+    .kbd {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 22px; height: 22px;
+      padding: 0 6px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
+      color: var(--text);
+      box-shadow: var(--shadow-soft);
+      font-weight: 600;
+      font-size: 12px;
     }
-    @media (max-height: 520px) {
-      .dialog { align-items: start; }
-    }
+
+    /* Focus styles */
+    :focus-visible { box-shadow: var(--focus); outline: none; }
   </style>
 </head>
 <body>
-  <div class="app" aria-label="Quick Copy Vault">
+  <div class="app" id="app" aria-live="polite">
+    <!-- Header -->
     <div class="header">
-      <div class="brand" aria-label="App brand">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M7 9 h10 M7 12 h10 M7 15 h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <div class="brand" aria-label="Secure Labels">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#006CFF"/>
+              <stop offset="1" stop-color="#00C2A8"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="12" fill="url(#g2)"/>
+          <g fill="white">
+            <rect x="16" y="18" width="32" height="24" rx="4"/>
+            <rect x="24" y="12" width="24" height="24" rx="4" opacity="0.8"/>
+          </g>
         </svg>
-        <h1>Quick Copy Vault</h1>
+        <div>
+          <h1>Secure Labels</h1>
+          <small>Tap to copy. Add, edit, delete. Import/Export JSON. Local storage.</small>
+        </div>
       </div>
-      <div class="hint">Tap a label or value to copy. Press A to add, E to export, I to import.</div>
-    </div>
 
-    <div class="controls" role="region" aria-label="Controls">
-      <div class="search">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M20 20 l-3.5 -3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        <input id="search" type="search" placeholder="Search by label or value…" aria-label="Search" autocomplete="off" />
-        <button id="clearSearch" class="clear" title="Clear search" aria-label="Clear search">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.2"/>
-            <path d="M9 9 L15 15 M15 9 L9 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
+      <div class="controls" role="group" aria-label="Primary actions">
+        <button class="btn primary" id="addBtn" title="Add (Shortcut: A)">
+          <!-- plus icon -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 5a1 1 0 0 1 2 0v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H5a1 1 0 1 1 0-2h6V5Z"/></svg>
+          Add
         </button>
+        <button class="btn" id="exportBtn" title="Export (Shortcut: E)">
+          <!-- export icon -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a1 1 0 0 1 1 1v9.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4A1 1 0 1 1 8.707 11.293L11 13.586V4a1 1 0 0 1 1-1ZM5 19a1 1 0 0 0 1 1h12a1 1 0 1 0 0-2H6a1 1 0 0 0-1 1Z"/></svg>
+          Export
+        </button>
+        <button class="btn" id="importBtn" title="Import (Shortcut: I)">
+          <!-- import icon -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21a1 1 0 0 1-1-1v-9.586L8.707 12.707a1 1 0 1 1-1.414-1.414l4-4a1 1 0 0 1 1.414 0l4 4a1 1 0 1 1-1.414 1.414L13 10.414V20a1 1 0 0 1-1 1ZM5 5a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z"/></svg>
+          Import
+        </button>
+        <input type="file" id="fileInput" accept=".json,application/json" hidden />
       </div>
 
-      <div class="sort" aria-label="Sort options">
-        <label for="sortSelect">Sort:</label>
-        <select id="sortSelect">
-          <option value="label">Label (A–Z)</option>
-          <option value="updated">Last updated</option>
+      <div class="controls">
+        <div class="search-wrap" role="search">
+          <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path fill="currentColor" d="M10 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14Zm8.707 14.293a1 1 0 0 1 0 1.414l-2.586 2.586a1 1 0 1 1-1.414-1.414l2.586-2.586a1 1 0 0 1 1.414 0Z"/>
+          </svg>
+          <input id="search" class="search" type="search" placeholder="Search labels or values…" autocomplete="off" />
+          <button id="clearSearch" class="clear-btn" title="Clear search">
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+              <path fill="currentColor" d="M6.343 6.343a1 1 0 0 1 1.414 0L12 10.586l4.243-4.243a1 1 0 1 1 1.414 1.414L13.414 12l4.243 4.243a1 1 0 1 1-1.414 1.414L12 13.414l-4.243 4.243a1 1 0 1 1-1.414-1.414L10.586 12 6.343 7.757a1 1 0 0 1 0-1.414Z"/>
+            </svg>
+          </button>
+        </div>
+        <select id="sort" class="sort" aria-label="Sort">
+          <option value="label-asc">Sort: Label A–Z</option>
+          <option value="updated-desc">Sort: Last updated</option>
         </select>
       </div>
-
-      <div class="actions">
-        <button id="addBtn" class="btn primary" title="Add (A)">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5 v14 M5 12 h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          <span>Add</span>
-        </button>
-        <button id="exportBtn" class="btn" title="Export (E)">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 4 v10 M7 9 l5-5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
-            <rect x="4" y="14" width="16" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          </svg>
-          <span>Export</span>
-        </button>
-        <label for="importInput" class="btn" title="Import (I)" style="cursor:pointer">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 20 v-10 M7 15 l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
-            <rect x="4" y="4" width="16" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          </svg>
-          <span>Import</span>
-        </label>
-        <input id="importInput" type="file" accept="application/json,.json" style="display:none" />
-      </div>
     </div>
 
-    <div class="list" role="table" aria-label="Records list">
-      <div class="list-header" role="row">
-        <div class="cell" role="columnheader">Label</div>
-        <div class="cell" role="columnheader">Value</div>
-        <div class="cell" role="columnheader">Actions</div>
+    <!-- List -->
+    <div class="list" id="list" role="list"></div>
+    <div class="empty" id="empty" hidden>No items yet. Press <span class="kbd">A</span> to add, <span class="kbd">I</span> to import.</div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
+
+    <!-- Dialog -->
+    <dialog id="dialog">
+      <form id="dialogForm" method="dialog">
+        <div class="dlg-head">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M11 5a1 1 0 0 1 2 0v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H5a1 1 0 1 1 0-2h6V5Z"/></svg>
+          <strong id="dialogTitle">Add item</strong>
+        </div>
+        <div class="dlg-body">
+          <div class="field">
+            <label for="labelInput">Label</label>
+            <input id="labelInput" class="input" name="label" placeholder="e.g., PLDT Account number" required />
+          </div>
+          <div class="field">
+            <label for="valueInput">Value</label>
+            <input id="valueInput" class="input" name="value" placeholder="e.g., 123456789" required />
+          </div>
+        </div>
+        <div class="dlg-actions">
+          <button type="button" class="btn" id="cancelDialog">Cancel</button>
+          <div style="display:flex;gap:8px">
+            <button type="submit" class="btn primary" id="saveDialog">Save</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div>
+        <strong>Shortcuts:</strong>
+        <span class="kbd">A</span> Add
+        <span class="kbd">E</span> Export
+        <span class="kbd">I</span> Import
       </div>
-      <div id="items"></div>
+      <div>
+        Tap either a label or value to copy. Green toast confirms.
+      </div>
     </div>
   </div>
-
-  <!-- Add/Edit Dialog -->
-  <div class="modal-backdrop" id="backdrop" aria-hidden="true"></div>
-  <div class="modal" id="modal" aria-hidden="true" aria-label="Record dialog">
-    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
-      <header id="dialogTitle">Add record</header>
-      <div class="content">
-        <div class="field">
-          <label for="labelInput">Label</label>
-          <input id="labelInput" type="text" placeholder="e.g., PLDT Account number" maxlength="160" />
-        </div>
-        <div class="field">
-          <label for="valueInput">Value</label>
-          <textarea id="valueInput" placeholder="e.g., 123456789" maxlength="1024"></textarea>
-        </div>
-      </div>
-      <footer>
-        <button id="cancelBtn" class="btn">Cancel</button>
-        <button id="saveBtn" class="btn primary">Save</button>
-      </footer>
-    </div>
-  </div>
-
-  <!-- Toast -->
-  <div id="toast" class="toast" role="status" aria-live="polite">Copied</div>
 
   <script>
-    // Storage keys and state
-    const LS_KEY = "quick-copy-vault:v1";
-    const LS_SORT_KEY = "quick-copy-vault:sort";
-    let records = [];
-    let editingId = null;
-    let sortMode = localStorage.getItem(LS_SORT_KEY) || "label";
+    ;(() => {
+      const STORAGE_KEY = 'secure-labels:v1';
+      const listEl = document.getElementById('list');
+      const emptyEl = document.getElementById('empty');
+      const toastEl = document.getElementById('toast');
+      const searchEl = document.getElementById('search');
+      const clearSearchEl = document.getElementById('clearSearch');
+      const sortEl = document.getElementById('sort');
+      const addBtn = document.getElementById('addBtn');
+      const exportBtn = document.getElementById('exportBtn');
+      const importBtn = document.getElementById('importBtn');
+      const fileInput = document.getElementById('fileInput');
 
-    // Elements
-    const itemsEl = document.getElementById("items");
-    const searchEl = document.getElementById("search");
-    const clearSearchEl = document.getElementById("clearSearch");
-    const sortSelect = document.getElementById("sortSelect");
-    const addBtn = document.getElementById("addBtn");
-    const exportBtn = document.getElementById("exportBtn");
-    const importInput = document.getElementById("importInput");
-    const backdrop = document.getElementById("backdrop");
-    const modal = document.getElementById("modal");
-    const dialogTitle = document.getElementById("dialogTitle");
-    const labelInput = document.getElementById("labelInput");
-    const valueInput = document.getElementById("valueInput");
-    const cancelBtn = document.getElementById("cancelBtn");
-    const saveBtn = document.getElementById("saveBtn");
-    const toastEl = document.getElementById("toast");
+      const dialog = document.getElementById('dialog');
+      const dialogForm = document.getElementById('dialogForm');
+      const dialogTitle = document.getElementById('dialogTitle');
+      const labelInput = document.getElementById('labelInput');
+      const valueInput = document.getElementById('valueInput');
+      const cancelDialog = document.getElementById('cancelDialog');
+      const saveDialog = document.getElementById('saveDialog');
 
-    // Utility
-    const now = () => Date.now();
-    const uid = () => Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-    const sanitize = (s) => (s ?? "").toString().trim();
-    const showToast = (msg = "Copied") => {
-      toastEl.textContent = msg;
-      toastEl.style.display = "block";
-      clearTimeout(showToast._t);
-      showToast._t = setTimeout(() => { toastEl.style.display = "none"; }, 1400);
-    };
-    const inactive = () => {
-      const ae = document.activeElement;
-      return !ae || ae === document.body;
-    };
-
-    // Persistence
-    function load() {
-      try {
-        const raw = localStorage.getItem(LS_KEY);
-        if (!raw) return [];
-        const data = JSON.parse(raw);
-        if (!Array.isArray(data)) return [];
-        return data.map(r => ({
-          id: String(r.id || uid()),
-          label: String(r.label || ""),
-          value: String(r.value || ""),
-          createdAt: Number(r.createdAt || now()),
-          updatedAt: Number(r.updatedAt || now()),
-        }));
-      } catch {
-        return [];
-      }
-    }
-    function save() {
-      localStorage.setItem(LS_KEY, JSON.stringify(records));
-    }
-
-    // Import/Export format
-    function exportJSON() {
-      const payload = {
-        version: 1,
-        exportedAt: new Date().toISOString(),
-        records: records,
+      // In-memory state
+      let state = {
+        items: [],
+        search: '',
+        sort: 'label-asc',
+        editingId: null
       };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "quick-copy-vault.json";
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 0);
-    }
-    async function importJSON(file) {
-      const text = await file.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        alert("Invalid JSON file.");
-        return;
-      }
-      if (data?.version !== 1 || !Array.isArray(data?.records)) {
-        alert("Unsupported format. Expected { version: 1, records: [...] }.");
-        return;
-      }
-      const confirmReplace = confirm("Import will replace current records. Continue?");
-      if (!confirmReplace) return;
-      records = data.records.map(r => ({
-        id: String(r.id || uid()),
-        label: String(r.label || ""),
-        value: String(r.value || ""),
-        createdAt: Number(r.createdAt || now()),
-        updatedAt: Number(r.updatedAt || now()),
+
+      // Sample initial data (mapped to label/value)
+      const sampleData = [
+       
+        {"id":"MHWCCDD9YDH3SO","bankName":"Sample Data","accountNumber":"HERE IT IS"}
+      ].map(x => ({
+        id: x.id,
+        label: x.bankName,
+        value: x.accountNumber,
+        updatedAt: Date.now()
       }));
-      sortRecords();
-      save();
-      render();
-      showToast("Imported");
-    }
 
-    // Sort
-    function sortAZ() {
-      records.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
-    }
-    function sortUpdated() {
-      records.sort((a, b) => b.updatedAt - a.updatedAt);
-    }
-    function sortRecords() {
-      if (sortMode === "updated") sortUpdated(); else sortAZ();
-    }
+      // Utilities
+      const uid = () => Math.random().toString(36).slice(2, 10).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
+      const persist = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
+      const load = () => {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const arr = JSON.parse(raw);
+            if (Array.isArray(arr)) return arr.map(migrateItem);
+          }
+        } catch {}
+        return sampleData;
+      };
+      const migrateItem = (it) => {
+        // Ensure schema {id,label,value,updatedAt}
+        return {
+          id: it.id || uid(),
+          label: it.label ?? it.bankName ?? '',
+          value: it.value ?? it.accountNumber ?? '',
+          updatedAt: it.updatedAt ?? Date.now()
+        };
+      };
 
-    // CRUD
-    function openDialog(editId = null) {
-      editingId = editId;
-      if (editId) {
-        const rec = records.find(r => r.id === editId);
-        if (!rec) return;
-        dialogTitle.textContent = "Edit record";
-        labelInput.value = rec.label;
-        valueInput.value = rec.value;
-      } else {
-        dialogTitle.textContent = "Add record";
-        labelInput.value = "";
-        valueInput.value = "";
-      }
-      backdrop.style.display = "block";
-      modal.style.display = "grid";
-      modal.setAttribute("aria-hidden", "false");
-      setTimeout(() => labelInput.focus(), 60);
-    }
-    function closeDialog() {
-      backdrop.style.display = "none";
-      modal.style.display = "none";
-      modal.setAttribute("aria-hidden", "true");
-      editingId = null;
-    }
-    function saveRecord() {
-      const label = sanitize(labelInput.value);
-      const value = sanitize(valueInput.value);
-      if (!label) { alert("Label is required."); labelInput.focus(); return; }
-      if (!value) { alert("Value is required."); valueInput.focus(); return; }
-      if (editingId) {
-        const idx = records.findIndex(r => r.id === editingId);
-        if (idx >= 0) {
-          records[idx] = { ...records[idx], label, value, updatedAt: now() };
+      const showToast = (msg = 'Copied') => {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(showToast._t);
+        showToast._t = setTimeout(() => toastEl.classList.remove('show'), 1400);
+      };
+
+      const copyText = async (text) => {
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast('Copied');
+        } catch {
+          // Fallback
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); showToast('Copied'); } catch {}
+          ta.remove();
         }
-      } else {
-        records.push({ id: uid(), label, value, createdAt: now(), updatedAt: now() });
-      }
-      sortRecords();
-      save();
-      render();
-      closeDialog();
-    }
-    function deleteRecord(id) {
-      const rec = records.find(r => r.id === id);
-      const ok = confirm(`Delete "${rec?.label ?? "this record"}"?`);
-      if (!ok) return;
-      records = records.filter(r => r.id !== id);
-      save();
-      render();
-    }
+      };
 
-    // Copy handlers
-    async function copyText(text, labelForToast = "") {
-      try {
-        await navigator.clipboard.writeText(text);
-        showToast(labelForToast ? `Copied ${labelForToast}` : "Copied");
-      } catch {
-        const ta = document.createElement("textarea");
-        ta.value = text; document.body.appendChild(ta);
-        ta.select(); document.execCommand("copy");
-        ta.remove();
-        showToast("Copied");
-      }
-    }
+      // Filtering and sorting
+      const getVisible = () => {
+        const q = state.search.trim().toLowerCase();
+        let items = [...state.items];
+        if (q) {
+          items = items.filter(it =>
+            it.label.toLowerCase().includes(q) ||
+            it.value.toLowerCase().includes(q)
+          );
+        }
+        if (state.sort === 'label-asc') {
+          items.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+        } else if (state.sort === 'updated-desc') {
+          items.sort((a, b) => b.updatedAt - a.updatedAt);
+        }
+        return items;
+      };
 
-    // Render
-    function render() {
-      const query = sanitize(searchEl.value).toLowerCase();
-      const frag = document.createDocumentFragment();
+      // Render
+      const render = () => {
+        const items = getVisible();
+        listEl.innerHTML = '';
+        if (!items.length) {
+          emptyEl.hidden = false;
+          return;
+        }
+        emptyEl.hidden = true;
+        const frag = document.createDocumentFragment();
+        items.forEach(it => {
+          const row = document.createElement('div');
+          row.className = 'item';
+          row.setAttribute('role', 'listitem');
 
-      const filtered = records.filter(r =>
-        !query ||
-        r.label.toLowerCase().includes(query) ||
-        r.value.toLowerCase().includes(query)
-      );
+          // Left cell: Label
+          const labelCell = document.createElement('div');
+          labelCell.className = 'cell';
+          labelCell.title = 'Tap to copy label';
+          labelCell.innerHTML = `
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="color:var(--accent)">
+              <path fill="currentColor" d="M7 7a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-7a3 3 0 0 1-3-3V7Zm-2 4a1 1 0 0 1 2 0v6a3 3 0 0 0 3 3h6a1 1 0 1 1 0 2H10a5 5 0 0 1-5-5v-6Z"/>
+            </svg>
+            <span class="label">${escapeHtml(it.label)}</span>
+          `;
+          labelCell.addEventListener('click', () => copyText(it.label));
 
-      if (filtered.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "item";
-        empty.innerHTML = `
-          <div class="cell"><span class="muted">No records found.</span></div>
-          <div class="cell"></div>
-          <div class="cell"></div>`;
-        frag.appendChild(empty);
-      } else {
-        filtered.forEach(r => {
-          const row = document.createElement("div");
-          row.className = "item";
-          row.setAttribute("role", "row");
+          // Right cell: Value
+          const valueCell = document.createElement('div');
+          valueCell.className = 'cell';
+          valueCell.title = 'Tap to copy value';
+          valueCell.innerHTML = `
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="color:var(--accent-2)">
+              <path fill="currentColor" d="M7 7a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-7a3 3 0 0 1-3-3V7Zm-2 4a1 1 0 0 1 2 0v6a3 3 0 0 0 3 3h6a1 1 0 1 1 0 2H10a5 5 0 0 1-5-5v-6Z"/>
+            </svg>
+            <span class="value">${escapeHtml(it.value)}</span>
+          `;
+          valueCell.addEventListener('click', () => copyText(it.value));
 
-          const c1 = document.createElement("div");
-          c1.className = "cell";
-          const labelSpan = document.createElement("span");
-          labelSpan.className = "label";
-          labelSpan.textContent = r.label;
-          labelSpan.title = "Tap to copy label";
-          labelSpan.addEventListener("click", () => copyText(r.label, "label"));
-          c1.appendChild(labelSpan);
+          // Actions
+          const actions = document.createElement('div');
+          actions.className = 'item-actions';
 
-          const c2 = document.createElement("div");
-          c2.className = "cell";
-          const valueSpan = document.createElement("span");
-          valueSpan.className = "value";
-          valueSpan.textContent = r.value;
-          valueSpan.title = "Tap to copy value";
-          valueSpan.addEventListener("click", () => copyText(r.value, "value"));
-          c2.appendChild(valueSpan);
+          const editBtn = document.createElement('button');
+          editBtn.className = 'icon-btn edit';
+          editBtn.title = 'Edit';
+          editBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm18.71-10.04a1.004 1.004 0 0 0 0-1.42L18.21 2.29a1.004 1.004 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.86Z"/>
+            </svg>`;
+          editBtn.addEventListener('click', () => openDialog('edit', it));
 
-          const c3 = document.createElement("div");
-          c3.className = "cell item-actions";
-          const editBtn = document.createElement("button");
-          editBtn.className = "icon-btn";
-          editBtn.title = "Edit";
-          editBtn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 20 h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M14.5 5.5 l4 4 L9 19 H5 v-4 z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-          </svg>`;
-          editBtn.addEventListener("click", () => openDialog(r.id));
-          const delBtn = document.createElement("button");
-          delBtn.className = "icon-btn";
-          delBtn.title = "Delete";
-          delBtn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 7 h12 M9 7 v-2 h6 v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <rect x="6.5" y="7" width="11" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
-            <path d="M10 11 v6 M14 11 v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>`;
-          delBtn.addEventListener("click", () => deleteRecord(r.id));
-          c3.appendChild(editBtn);
-          c3.appendChild(delBtn);
+          const delBtn = document.createElement('button');
+          delBtn.className = 'icon-btn delete';
+          delBtn.title = 'Delete';
+          delBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path fill="currentColor" d="M9 3a1 1 0 0 0-1 1v1H5a1 1 0 1 0 0 2h14a1 1 0 1 0 0-2h-3V4a1 1 0 0 0-1-1H9Zm-3 6a1 1 0 0 1 1 1v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V10a1 1 0 1 1 2 0v9a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V10a1 1 0 0 1 1-1Zm4 1a1 1 0 0 1 1 1v7a1 1 0 1 1-2 0v-7a1 1 0 0 1 1-1Zm4 0a1 1 0 0 1 1 1v7a1 1 0 1 1-2 0v-7a1 1 0 0 1 1-1Z"/>
+            </svg>`;
+          delBtn.addEventListener('click', () => {
+            if (confirm(`Delete "${it.label}"?`)) {
+              state.items = state.items.filter(x => x.id !== it.id);
+              persist();
+              render();
+            }
+          });
 
-          row.appendChild(c1);
-          row.appendChild(c2);
-          row.appendChild(c3);
+          actions.append(editBtn, delBtn);
+          row.append(labelCell, valueCell, actions);
           frag.appendChild(row);
         });
-      }
+        listEl.appendChild(frag);
+      };
 
-      itemsEl.innerHTML = "";
-      itemsEl.appendChild(frag);
-    }
+      // Dialog handling
+      const openDialog = (mode, item) => {
+        state.editingId = mode === 'edit' ? item.id : null;
+        dialogTitle.textContent = mode === 'edit' ? 'Edit item' : 'Add item';
+        labelInput.value = mode === 'edit' ? item.label : '';
+        valueInput.value = mode === 'edit' ? item.value : '';
+        dialog.showModal();
+        setTimeout(() => labelInput.focus(), 50);
+      };
+      const closeDialog = () => dialog.close();
 
-    // Initial seed
-    function seedIfEmpty() {
-      if (records.length > 0) return;
-      records = [
-        { id: uid(), label: "PLDT Account number", value: "123456789", createdAt: now(), updatedAt: now() }
-      ];
-      sortRecords();
-      save();
-    }
+      dialogForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const label = labelInput.value.trim();
+        const value = valueInput.value.trim();
+        if (!label || !value) return;
 
-    // Events
-    addBtn.addEventListener("click", () => openDialog());
-    exportBtn.addEventListener("click", exportJSON);
-    importInput.addEventListener("change", (e) => {
-      const file = e.target.files?.[0];
-      if (file) importJSON(file).finally(() => { importInput.value = ""; });
-    });
-
-    cancelBtn.addEventListener("click", closeDialog);
-    backdrop.addEventListener("click", closeDialog);
-    saveBtn.addEventListener("click", saveRecord);
-
-    // Search and clear
-    searchEl.addEventListener("input", render);
-    clearSearchEl.addEventListener("click", () => {
-      searchEl.value = "";
-      render();
-      searchEl.focus();
-    });
-
-    // Sort select persistence
-    sortSelect.value = sortMode;
-    sortSelect.addEventListener("change", (e) => {
-      sortMode = e.target.value;
-      localStorage.setItem(LS_SORT_KEY, sortMode);
-      sortRecords();
-      render();
-    });
-
-    // Keyboard shortcuts: A (add), E (export), I (import) when inactive
-    window.addEventListener("keydown", (e) => {
-      const key = e.key.toLowerCase();
-      if (!inactive()) return;
-      if (key === "a") { e.preventDefault(); openDialog(); }
-      else if (key === "e") { e.preventDefault(); exportJSON(); }
-      else if (key === "i") { e.preventDefault(); importInput.click(); }
-    });
-
-    // Accessibility: close dialog with Escape
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && modal.style.display === "grid") {
+        if (state.editingId) {
+          const idx = state.items.findIndex(x => x.id === state.editingId);
+          if (idx >= 0) {
+            state.items[idx] = {
+              ...state.items[idx],
+              label, value,
+              updatedAt: Date.now()
+            };
+          }
+        } else {
+          state.items.push({
+            id: uid(),
+            label, value,
+            updatedAt: Date.now()
+          });
+        }
+        persist();
         closeDialog();
+        render();
+      });
+      cancelDialog.addEventListener('click', closeDialog);
+
+      // Events: search, clear, sort
+      searchEl.addEventListener('input', () => { state.search = searchEl.value; render(); });
+      clearSearchEl.addEventListener('click', () => { searchEl.value = ''; state.search = ''; render(); });
+
+      sortEl.addEventListener('change', () => { state.sort = sortEl.value; render(); });
+
+      // Add / Export / Import
+      addBtn.addEventListener('click', () => openDialog('add'));
+      exportBtn.addEventListener('click', () => {
+        const exportArr = state.items.map(({id, label, value}) => ({
+          id,
+          bankName: label,
+          accountNumber: value
+        }));
+        const blob = new Blob([JSON.stringify(exportArr, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `secure-labels-${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+      importBtn.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          const arr = JSON.parse(text);
+          if (!Array.isArray(arr)) throw new Error('Invalid JSON format');
+          const mapped = arr.map(migrateItem);
+          // Merge by id, update or add
+          const map = new Map(state.items.map(i => [i.id, i]));
+          mapped.forEach(m => map.set(m.id, { ...map.get(m.id), ...m, updatedAt: Date.now() }));
+          state.items = Array.from(map.values());
+          persist();
+          render();
+        } catch (err) {
+          alert('Import failed: ' + (err?.message || 'Unknown error'));
+        } finally {
+          fileInput.value = '';
+        }
+      });
+
+      // Keyboard shortcuts (A/E/I when not typing inside inputs or dialog open)
+      document.addEventListener('keydown', (e) => {
+        const tag = (e.target.tagName || '').toLowerCase();
+        const typing = ['input', 'textarea', 'select'].includes(tag);
+        const dialogOpen = dialog.open === true;
+        if (typing || dialogOpen) return;
+
+        if (e.key.toLowerCase() === 'a') { e.preventDefault(); openDialog('add'); }
+        else if (e.key.toLowerCase() === 'e') { e.preventDefault(); exportBtn.click(); }
+        else if (e.key.toLowerCase() === 'i') { e.preventDefault(); importBtn.click(); }
+      });
+
+      // Accessibility: copy with Enter/Space
+      listEl.addEventListener('keydown', (e) => {
+        const tgt = e.target;
+        if (tgt.classList?.contains('cell') && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          const span = tgt.querySelector('.label, .value');
+          span && copyText(span.textContent || '');
+        }
+      });
+
+      // Escape HTML
+      function escapeHtml(s) {
+        return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
       }
-    });
 
-    // Boot
-    records = load();
-    seedIfEmpty();
-    sortRecords();
-    render();
+      // Initialize
+      state.items = load();
+      render();
 
-    // Mobile tap responsiveness
-    document.addEventListener("touchstart", () => {}, { passive: true });
+      // Progressive enhancement: improve touch feedback
+      document.querySelectorAll('.cell,.btn,.icon-btn').forEach(el => {
+        el.addEventListener('touchstart', () => el.style.transform = 'scale(0.99)'), { passive: true };
+        el.addEventListener('touchend', () => el.style.transform = '');
+      });
+    })();
   </script>
 </body>
 </html>
