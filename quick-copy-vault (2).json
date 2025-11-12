@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "exportedAt": "2025-11-12T18:38:05.697Z",
+  "records": [
+    {
+      "id": "389m6yogfomeb653g83mk",
+      "label": "Backup password",
+      "value": "U2FsdGVkX18L1enD10aVfIEgX1dxJl21761ntIN22V0q3s7XWOaQMw/1Ahdx3UMl",
+      "createdAt": 1762972678615,
+      "updatedAt": 1762972678615
+    },
+    {
+      "id": "mgf8j59lmhwa2bh2",
+      "label": "BDO Account number",
+      "value": "007440266940",
+      "createdAt": 1762968731798,
+      "updatedAt": 1762968731798
+    },
+    {
+      "id": "utvy5j5boxz1hjudx4bas",
+      "label": "BDO Credit Card",
+      "value": "3562320353889740",
+      "createdAt": 1762972596504,
+      "updatedAt": 1762972596504
+    },
+    {
+      "id": "gyk6eyxcmhwa6z0t",
+      "label": "Life & Health - Cara Celestine Miñoza Tariao",
+      "value": "D20240000065627",
+      "createdAt": 1762968948941,
+      "updatedAt": 1762968948941
+    },
+    {
+      "id": "3wf63pggz388b0d1houn2m",
+      "label": "Life & Health - Ramon Tariao",
+      "value": "P20230000045715",
+      "createdAt": 1762972612833,
+      "updatedAt": 1762972612833
+    },
+    {
+      "id": "wn1miukvmhwa6l9y",
+      "label": "Life & Health - Rechel Daitol",
+      "value": "D20230000045716",
+      "createdAt": 1762968931126,
+      "updatedAt": 1762968931126
+    },
+    {
+      "id": "5f0xh92emhwa6s90",
+      "label": "Life & Health - Renante Daitol",
+      "value": "D20230000045717",
+      "createdAt": 1762968940164,
+      "updatedAt": 1762968940164
+    },
+    {
+      "id": "s2atlzs8mhwa300w",
+      "label": "PAGIBIG Number",
+      "value": "121179442748",
+      "createdAt": 1762968763616,
+      "updatedAt": 1762968763616
+    },
+    {
+      "id": "skqk8uw4mhwa3cti",
+      "label": "Philhealth Number",
+      "value": "120255535302",
+      "createdAt": 1762968780198,
+      "updatedAt": 1762968780198
+    },
+    {
+      "id": "i5ky0bhdmhwa36ek",
+      "label": "SSS Number",
+      "value": "3459903182",
+      "createdAt": 1762968771884,
+      "updatedAt": 1762968771884
+    },
+    {
+      "id": "h1ikzfnumhwa2k87",
+      "label": "TIN Number",
+      "value": "332970689000",
+      "createdAt": 1762968743143,
+      "updatedAt": 1762968743143
+    }
+  ]
+}
