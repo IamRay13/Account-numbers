@@ -1,0 +1,105 @@
+Help me create Help me create a project using single HTML css and js embedded 
+
+
+This is all about notes
+Left side are the titles, like 6MWT Needed, SWO Needed, SWO Correction etc... Once any of these were clicked, beside the titles will show 2 textareas with notes, example for the SWO request text area 1 "Good day,
+
+The patient is due for their 60‑month Oxygen Recertification. Please complete the SWO, ensuring dates and signature are in the same format.
+
+Have DOCTOR  sign and fax to (484) 362‑1480 at your earliest convenience.
+
+For questions, call (484) 567‑0666.
+Thank you."
+
+textarea 2 
+"From: Tariao, Raymond
+Phone: (484) 567-0666
+Fax: (484) 362-1480
+
+Phone: 4845670666
+Fax: 4843621480"
+
+Make sure the titles will not be hidden once clicked.
+
+SWO request AND THE .JSON FILE I PROVIDED BELOW ARE just an example do not hard code it, allow users to add their own titles, textarea 1 and 2
+
+- do not forget the favicon
+
+-  Text area should be long enough for me to see everything without scrolling down to the bottom
+- Favicon relate to the project using SVG be creative
+- Local storage for persistency
+- these >     :root{
+      --bg: #0f172a;         /* slate-900 */
+      --panel: #111827;      /* gray-900 */
+      --panel-2: #0b1320;    /* deep slate */
+      --accent: #0ea5a5;     /* teal-500 */
+      --accent-2: #2563eb;   /* blue-600 */
+      --muted: #64748b;      /* slate-500 */
+      --border: #1f2937;     /* gray-800 */
+      --danger: #ef4444;     /* red-500 */
+      --warning: #f59e0b;    /* amber-500 */
+      --success: #22c55e;    /* green-500 */
+    }
+- Text color white, font style calibri, allow user to chose the size and font style add options for size should be a dropdown from 20px to 100px
+- changing the Font size will only affect the textarea 1 and 2
+- Any notes typed by the user will be saved automatically while they are typing, once they clicked another title the previous information will still be save and will not turn back to default notes added by the user but please add reset so the current active titles and textarea 1 and 2 will return to default added textareas
+- Titles, textarea 1 and two can be exported and imported through .json file, use the format below.
+- sort label from A - Z or sort by last updated
+-Search bar WILL WORK ON TITLES NOT THE CONTENTS> Clear Search Button: Add a small "x" button inside the search input to quickly clear the search query.
+- production ready
+- if the systems detects a number format like this > (606) 386-3976 or 6063863976 this can be tap to copy, also emails, names like > "PHILLIPS, HOLLY A", Insurances like Medicare, UHC, BCBS, Humana and all other USA insurances, also if the system detects any numbers like "10917779" or any numbers strictly between 7 digits to 10 digits can be detected and copied
+- If the user entered a date like 1/6/2025 the system will automatically change it to 01/06/2025, same goes with 162025 will turn to 01/06/2025 the key is the "2025", sames goes with another years like from 1997 to 2050 and so on.
+- Lets add feature text expansion this will apply in two textarea 1 and 2 only, abbreviation to expansion via .json file as well, allow user to import export them as well please see the attached .json file for text expansion, make sure the text expansion will work like on everything example if starts with "." .sent will turn into >[Scheduling] Updated both work order and pick-up/exchange ticket and sent it to dispatch DATE. BUT MAKE SURE the "." or the ".sent" will be replace by the text expansion to save us sometime erasing them.
+- remove "rename" beside the "delete" and the delete turn it into "x" for minimality
+- In the titles, only the titles, dates and time updated and the x button should be present and no more
+ - the .JSON FILE FOR NOTES AND TEXT EXPANSIONS ARE EXAMPLES DO NOT HARD CODE IT
+- .JSON IMPORT AND EXPORT FOR NOTES AND EXPANSION SHOULD BE JUST ONE NOT SEPARATE 
+- FOR THE TITLES SHOULD BE ADDED SCROLL BAR FOR EASY USE
+- text area should be longer 
+- always prioritize the notes give space to make it longer and wider the title just make sure its readable, do not add unnecessary things, save space.q
+
+.JSON FILE for the Notes >>>
+
+
+[
+  {
+    "title": "6MWT Needed",
+    "msg": "What’s needed: 6MWT\n\n| Item/s: E1390 &\n| RUL Date:\n\n| Doctor call: 0/5\n| Patient Call: 0/3\n| Faxes sent: 0/5\n\n| Insurance:\n| Policy Number:\n| Checked Eligibility: Yes\n\n| Doctor:\n(PECOS)\n| NPI:\n| Phone Number:\n| Fax Number:\n\nNote/s: No valid testing found. Sent fax request for 6MWT to F#CODE. Flipped SB to Election pending DNQ.",
+    "contact": "N/A"
+  },
+  {
+    "title": "Acceptable signature format",
+    "msg": "Acceptable Electronic Signature Examples\n. Chart Accepted by with provider's name\n. Electronically signed by with provider's name\n. Verified by with provider's name\n. Reviewed by with provider's name\n. Released by with provider's name\n. Signed by with provider's name\n. Signed before import by with provider's name\n. Signed: John Smith, M.D. with provider's name\n· Digitized signature: Handwritten and scanned into the computer\n. This is an electronically verified report by John Smith, M.D.\n. Authenticated by John Smith, M.D.\n· Authorized by: John Smith, M.D.\n· Digital signature: John Smith, M.D.\n. Confirmed by with provider's name\n. Closed by with provider's name\n. Finalized by with provider's name\n. Electronically approved by with provider's name\n. Signature derived from controlled access password",
+    "contact": "N/A"
+  },
+  {
+    "title": "Aged",
+    "msg": "[Scheduling Aged Cleanup Project] \nThis sales order #CODE was pending scheduling for CODE days, so we created new sales order #CODE to clear inactive or aging records, no additional action is needed.",
+    "contact": "[Scheduling Aged Cleanup Project] \nThis sales order #CODE was pending scheduling for CODE days, so we created new sales order #CODE to clear inactive or aging records, no additional action is needed."
+  },
+
+  {
+    "title": "SWO Request",
+    "msg": "Good day,\n\nThe patient is due for their 60‑month Oxygen Recertification. Please complete the SWO, ensuring dates and signature are in the same format.\n\nHave DOCTOR  sign and fax to (484) 362‑1480 at your earliest convenience.\n\nFor questions, call (484) 567‑0666.\nThank you.",
+    "contact": "From: Tariao, Raymond\nPhone: (484) 567-0666\nFax: (484) 362-1480\n\nPhone: 4845670666\nFax: 4843621480"
+  }
+]
+
+
+
+.JSON FILE FOR THE TEXT EXPANSION >>>
+
+[
+  {
+    "abbr": "SWO.EX",
+    "expansion": "What’s needed: SWO (SWO Expired) | Item/s: E1390 & CODE | Doctor call: 0/5 | Patient Call: 0/3 | Faxes sent: 1/5 | Note/s: This was sent to scheduling but CODE failed to process the restart, not really sure why but we have to reprocess everything. Sent another SWO electronically. Voided Sales Order - CODE and deleted Pickup/Exchange - CODE. Flipped back to CMN requested. "
+  },
+  {
+    "abbr": "dr.options",
+    "expansion": "[Scheduling] #CODE Insurance verified, called patient P#CODE, patient advised they're reviewing options with doctor before confirming."
+  },
+  {
+    "abbr": "claim.note",
+    "expansion": "RUL MET E1390 INITIAL \nRUL MET E1392 INITIAL \nRUL MET E0431 INITIAL\nRUL MET K0738 INITIAL"
+  }
+]
